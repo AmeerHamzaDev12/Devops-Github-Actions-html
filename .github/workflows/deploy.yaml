@@ -1,25 +1,24 @@
-name: CI/CD for Static HTML
+name: FTP Deploy
 
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:
+      - main   # jab main branch pe push hoga
 
 jobs:
-  deploy:
+  ftp-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Deploy via FTP
-        uses: SamKirkland/ftp-deploy-action@v4.3.0
+      - name: FTP Deploy
+        uses: SamKirkland/ftp-deploy-action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
           port: 21
-          local-dir: ./   # yahan tumhari index.html wali directory ka path do
-          server-dir: ./public_html/
+          protocol: ftps
+          local-dir: ./      # jahan se files uthayega (repo root)
+          server-dir: /      # jahan upload karna hai (agar /public_html ya koi aur folder hai to yahan likhna)
