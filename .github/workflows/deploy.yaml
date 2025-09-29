@@ -6,32 +6,32 @@ on:
       - main
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: 22
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build the Next.js app
+      - name: Build Next.js app
         run: npm run build
 
-      - name: Add .nojekyll file
+      - name: Export Next.js app
+        run: npm run export
+
+      - name: Add .nojekyll
         run: touch out/.nojekyll
 
-      - name: Deploy via FTP (stable version)
+      - name: Deploy via FTP
         uses: SamKirkland/ftp-deploy-action@v4.3.0
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -39,14 +39,5 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           port: 21
-          local-dir: ./
+          local-dir: ./out/
           server-dir: ./public_html/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-      - name: Debug FTP secrets
-        run: |
-          echo "Server is -> ${{ secrets.FTP_SERVER }}"
-          echo "Username is -> ${{ secrets.FTP_USERNAME }}"
-          echo "Password is -> ${{ secrets.FTP_PASSWORD }}"
