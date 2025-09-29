@@ -1,0 +1,52 @@
+name: CI/CD for Next.js App
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the Next.js app
+        run: npm run build
+
+      - name: Add .nojekyll file
+        run: touch out/.nojekyll
+
+      - name: Deploy via FTP (stable version)
+        uses: SamKirkland/ftp-deploy-action@v4.3.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./
+          server-dir: ./public_html/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+      - name: Debug FTP secrets
+        run: |
+          echo "Server is -> ${{ secrets.FTP_SERVER }}"
+          echo "Username is -> ${{ secrets.FTP_USERNAME }}"
+          echo "Password is -> ${{ secrets.FTP_PASSWORD }}"
