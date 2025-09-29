@@ -20,5 +20,5 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
           protocol: ftps
-          local-dir: ./      # jahan se files uthayega (repo root)
-          server-dir: /      # jahan upload karna hai (agar /public_html ya koi aur folder hai to yahan likhna)
+          local-dir: ./      
+          server-dir: /      
